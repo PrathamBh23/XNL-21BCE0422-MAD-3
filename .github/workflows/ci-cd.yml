@@ -50,7 +50,6 @@ jobs:
       # Step 10: Build Android APK
       - name: Build Android APK
         run: |
-          cd android  # Change to the android directory
           ./gradlew assembleRelease  # Build the release APK
 
       - name: Build iOS IPA
