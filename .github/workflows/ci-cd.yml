@@ -1,19 +1,122 @@
 name: Mobile App CI/CD Pipeline
 
+# Trigger on push to the main branch
 on:
   push:
     branches:
-      - main  # Trigger the pipeline when code is pushed to the 'main' branch
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use an Ubuntu environment for the build
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2  # Check out the code from the repository
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  #
+          node-version: '16'  # Set the Node.js version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run static analysis (Linting)
+        run: npm run lint  # Assuming linting is set up with ESLint
+
+      - name: Run code formatting
+        run: npm run format  # Assuming Prettier is set up for code formatting
+
+      - name: Build Android APK
+        run: ./gradlew assembleRelease  # For Android apps (Gradle build)
+
+      - name: Build iOS IPA
+        run: xcodebuild -scheme "MyApp" -configuration Release  # For iOS apps
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # Runs only after the build job finishes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run unit tests
+        run: npm test -- --coverage  # Run Jest unit tests with code coverage
+
+      - name: Run UI tests (Detox for React Native)
+        run: detox test  # Run Detox UI tests for React Native apps
+
+      - name: Upload Code Coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}  # Secure token for uploading coverage
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # Runs after the test job is successful
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Firebase CLI
+        run: npm install -g firebase-tools  # Install Firebase CLI (for example)
+
+      - name: Build Android APK
+        run: ./gradlew assembleRelease  # Build APK for Android
+
+      - name: Build iOS IPA
+        run: xcodebuild -scheme "MyApp" -configuration Release  # Build IPA for iOS
+
+      - name: Deploy to Firebase Hosting
+        run: firebase deploy --only hosting  # Deploy to Firebase Hosting
+
+      - name: Deploy to AWS (Simulated)
+        run: |
+          aws s3 cp ./build/app-release.apk s3://my-bucket/my-app.apk  # Simulate AWS deployment
+
+      - name: Deploy to GCP (Simulated)
+        run: |
+          gsutil cp ./build/app-release.apk gs://my-bucket/my-app.apk  # Simulate GCP deployment
+
+  observability:
+    runs-on: ubuntu-latest
+    needs: deploy  # Runs after the deploy job is successful
+    steps:
+      - name: Set up Prometheus
+        run: |
+          docker-compose -f docker-compose-prometheus.yml up -d  # Start Prometheus
+
+      - name: Set up Grafana
+        run: |
+          docker-compose -f docker-compose-grafana.yml up -d  # Start Grafana
+
+      - name: Push Metrics to Prometheus
+        run: |
+          curl -X POST -d "metrics data" http://localhost:9090/metrics  # Push custom metrics to Prometheus
+
+      - name: Monitor Deployment Status in Grafana
+        run: curl -X GET http://localhost:3000/monitoring  # Check status in Grafana
+
+  rollback:
+    runs-on: ubuntu-latest
+    needs: deploy  # Runs after deploy job
+    if: failure()  # Runs only if deployment fails
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Rollback to Previous Version (Firebase)
+        run: firebase hosting:rollback  # Rollback Firebase deployment to the previous version
+
+      - name: Rollback to Previous Version (AWS)
+        run: |
+          aws s3 cp s3://my-bucket/my-app-v1.apk ./  # Simulate rollback to previous APK version
+          aws s3 cp ./my-app-v1.apk s3://my-bucket/my-app.apk  # Deploy previous APK
+
+      - name: Rollback to Previous Version (GCP)
+        run: |
+          gsutil cp gs://my-bucket/my-app-v1.apk ./  # Simulate rollback to previous APK
+          gsutil cp ./my-app-v1.apk gs://my-bucket/my-app.apk  # Deploy previous APK
