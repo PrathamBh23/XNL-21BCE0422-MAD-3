@@ -96,8 +96,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Rollback Firebase Deployment
-        run: firebase hosting:rollback
+      - name: Rollback Firebase Hosting
+        if: failure()
+        run: |
+          firebase hosting:rollback
+
 
       - name: Rollback AWS Deployment
         run: |
