@@ -45,7 +45,7 @@ jobs:
         run: npm run format  # Prettier for code formatting
 # Step 9: Grant execute permissions for gradlew
       - name: Grant execute permissions for gradlew
-        run: chmod +x ./android/gradlew  # Make gradlew executable (assuming it's in the android directory)
+        run: chmod +x gradlew # Make gradlew executable (assuming it's in the android directory)
 
       # Step 10: Build Android APK
       - name: Build Android APK
