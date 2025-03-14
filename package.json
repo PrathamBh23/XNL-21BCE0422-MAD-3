@@ -6,7 +6,7 @@
   "scripts": {
     "start": "react-native start", 
     "test": "jest --coverage", 
-    "lint": "eslint ./src",
+    "lint": "eslint ./src/**/*.{js,jsx,ts,tsx}"
     "format": "prettier --write ./src/**/*.js",
     "build": "react-native run-android", 
     "build-ios": "xcodebuild -scheme MyApp -configuration Release", 
