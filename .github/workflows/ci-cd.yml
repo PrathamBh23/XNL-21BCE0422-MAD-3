@@ -23,7 +23,6 @@ jobs:
 
       - name: Run static analysis (Linting)
         run: npm run lint
-             npm install eslint-plugin-react@latest --save-dev
       - name: Install Firebase CLI
         run: |
           curl -sL https://firebase.tools | bash
