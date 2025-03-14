@@ -1,50 +1,19 @@
 name: Mobile App CI/CD Pipeline
 
-# Trigger the workflow on every push to the main branch
 on:
   push:
     branches:
-      - main
+      - main  # Trigger the pipeline when code is pushed to the 'main' branch
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Runs the job on Ubuntu machine
+    runs-on: ubuntu-latest  # Use an Ubuntu environment for the build
 
     steps:
-      - uses: actions/checkout@v2  # Check out the code from GitHub repository
+      - name: Checkout code
+        uses: actions/checkout@v2  # Check out the code from the repository
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'  # Set up the Node.js environment
-      - name: Install dependencies
-        run: npm install  # Replace with your mobile app's package manager command (e.g., Flutter, React Native, etc.)
-      - name: Run Linting and Formatting
-        run: npm run lint && npm run format  # Replace with linting and formatting commands if available
-      - name: Build the App
-        run: npm run build  # Replace with your mobile app's build command (e.g., `flutter build`, `react-native run-android`, etc.)
-
-  test:
-    runs-on: ubuntu-latest  # Runs the job on Ubuntu machine
-
-    steps:
-      - uses: actions/checkout@v2  # Check out the code from GitHub repository
-      - name: Install Dependencies
-        run: npm install  # Install dependencies for your app
-      - name: Run Unit Tests
-        run: npm run test  # Replace with the actual test command for unit tests (e.g., Jest, Mocha, etc.)
-      - name: Run UI Tests
-        run: npm run test:ui  # Replace with the UI test command (e.g., Appium, Detox, etc.)
-      - name: Publish Test Coverage Badge
-        run: echo "Test coverage: 80%"  # Replace with the actual coverage badge if available
-
-  deploy:
-    runs-on: ubuntu-latest  # Runs the job on Ubuntu machine
-
-    steps:
-      - uses: actions/checkout@v2  # Check out the code from GitHub repository
-      - name: Build Android APK
-        run: ./gradlew assembleRelease  # Android build command (Gradle build)
-      - name: Build iOS IPA
-        run: xcodebuild -workspace ios/YourApp.xcworkspace -scheme YourApp -archivePath ios/build/YourApp.xcarchive archive  # iOS build command (Xcode)
-      - name: Deploy to Firebase (or your app distribution service)
-        run: firebase deploy --only hosting  # Example of deploying to Firebase Hosting (adjust for your service)
+          node-version: '16'  #
