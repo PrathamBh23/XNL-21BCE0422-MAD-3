@@ -44,8 +44,12 @@ jobs:
       - name: Run code formatting
         run: npm run format  # Prettier for code formatting
 
-      - name: Build Android APK
-        run: ./gradlew assembleRelease  # For Android app
+      - name: Grant execute permissions for gradlew
+        run: chmod +x ./gradlew
+      
+      - name: Build Android Release
+        run: ./gradlew assembleRelease
+       # For Android app
 
       - name: Build iOS IPA
         run: xcodebuild -scheme "MyApp" -configuration Release  # For iOS app
