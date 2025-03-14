@@ -43,13 +43,15 @@ jobs:
 
       - name: Run code formatting
         run: npm run format  # Prettier for code formatting
-
+# Step 9: Grant execute permissions for gradlew
       - name: Grant execute permissions for gradlew
-        run: chmod +x ./gradlew
-      
-      - name: Build Android Release
-        run: ./gradlew assembleRelease
-       # For Android app
+        run: chmod +x ./android/gradlew  # Make gradlew executable (assuming it's in the android directory)
+
+      # Step 10: Build Android APK
+      - name: Build Android APK
+        run: |
+          cd android  # Change to the android directory
+          ./gradlew assembleRelease  # Build the release APK
 
       - name: Build iOS IPA
         run: xcodebuild -scheme "MyApp" -configuration Release  # For iOS app
